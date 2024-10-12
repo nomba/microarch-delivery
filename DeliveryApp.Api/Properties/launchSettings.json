@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "DeliveryApp": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "applicationUrl": "http://0.0.0.0:8082",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CONNECTION_STRING": "Server=localhost;Port=5432;User Id=username;Password=secret;Database=delivery;",
+        "GEO_SERVICE_GRPC_HOST": "http://localhost:5004",
+        "MESSAGE_BROKER_HOST": "localhost"
+      }
+    }
+  }
+}
