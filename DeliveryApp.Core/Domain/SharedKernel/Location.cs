@@ -17,11 +17,9 @@ namespace DeliveryApp.Core.Domain.SharedKernel;
 
 public class Location : ValueObject
 {
-    private const int MinX = 1;
-    private const int MaxX = 10;
-    private const int MinY = 1;
-    private const int MaxY = 10;
-
+    public static readonly Location Min = new(1, 1);
+    public static readonly Location Max = new(10, 10);
+    
     [ExcludeFromCodeCoverage]
     private Location()
     {
@@ -46,10 +44,10 @@ public class Location : ValueObject
 
     public static Result<Location, Error> Create(int x, int y)
     {
-        if (x is < MinX or > MaxY)
+        if (x < Min.X | x > Max.X)
             return GeneralErrors.ValueIsInvalid(nameof(x));
 
-        if (y is < MinY or > MaxY)
+        if (y < Min.Y | y > Max.Y)
             return GeneralErrors.ValueIsInvalid(nameof(y));
 
         return new Location(x, y);
@@ -58,7 +56,7 @@ public class Location : ValueObject
     public static Location RollDice()
     {
         var rnd = new Random();
-        return new Location(rnd.Next(MinX, MaxX + 1), rnd.Next(MinY, MaxY + 1));
+        return new Location(rnd.Next(Min.X, Max.X + 1), rnd.Next(Min.Y, Max.Y + 1));
     }
 
     public Distance GetDistanceTo(Location another)
