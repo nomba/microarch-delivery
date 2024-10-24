@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Domain.SharedKernel;
-using Primitives;
 
 namespace DeliveryApp.Core.Domain.Model.CourierAggregate;
 
@@ -20,7 +19,7 @@ public class DeliveryTime : ValueObject
     
     public int StepCount { get; }
     
-    public static Result<DeliveryTime, Error> Calculate(Location current, Location target, Speed speed)
+    public static DeliveryTime Calculate(Location current, Location target, Speed speed)
     {
         var distance = current.GetDistanceTo(target);
         
