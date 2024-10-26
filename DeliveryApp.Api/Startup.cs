@@ -1,3 +1,5 @@
+using DeliveryApp.Core.Domain.Services.DispatchService;
+
 namespace DeliveryApp.Api;
 
 public class Startup
@@ -36,6 +38,9 @@ public class Startup
         var connectionString = Configuration["CONNECTION_STRING"];
         var geoServiceGrpcHost = Configuration["GEO_SERVICE_GRPC_HOST"];
         var messageBrokerHost = Configuration["MESSAGE_BROKER_HOST"];
+        
+        // Domain Services
+        services.AddTransient<IDispatchService, DispatchService>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
