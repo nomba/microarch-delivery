@@ -1,4 +1,8 @@
 using DeliveryApp.Core.Domain.Services.DispatchService;
+using DeliveryApp.Core.Ports;
+using DeliveryApp.Infrastructure.Adapters.Postgres;
+using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
+using Primitives;
 
 namespace DeliveryApp.Api;
 
@@ -41,6 +45,13 @@ public class Startup
         
         // Domain Services
         services.AddTransient<IDispatchService, DispatchService>();
+
+        // Unit of Work
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        
+        // Port & Adapters
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<ICourierRepository, CourierRepository>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
