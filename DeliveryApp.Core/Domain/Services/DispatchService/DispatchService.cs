@@ -34,22 +34,20 @@ public class DispatchService : IDispatchService
         
         // Выбираем подходящего курьера в соотвествии с алгоритмом
 
-        var best = couriers
-            .Select(courier => new {Courier = courier, DeliveryTime = courier.CheckDeliveryTime(order).Value})
-            .MinBy(deliveryTimeDistribution => deliveryTimeDistribution.DeliveryTime.StepCount);
+        var fastestCourier = couriers.MinBy(courier => courier.CheckDeliveryTime(order).Value.StepCount);
 
-        if (best is null)
+        if (fastestCourier is null)
             return Errors.CantFindAnyCourierForOrder(order.Id);
         
         // Назначаем курьера на заказ
         
-        var assignOrderResult = order.Assign(best.Courier);
+        var assignOrderResult = order.Assign(fastestCourier);
         if (assignOrderResult.IsFailure)
             return assignOrderResult;
 
         // Резервируем курьера для заказа
         
-        var takeOrderResult =  best.Courier.Take(order);
+        var takeOrderResult =  fastestCourier.Take(order);
         if (takeOrderResult.IsFailure)
             return takeOrderResult;
         
