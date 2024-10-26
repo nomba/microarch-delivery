@@ -90,7 +90,7 @@ public class CourierShould
 
         //Act
         
-        var result = courier.Assign(order);
+        var result = courier.Take(order);
 
         //Assert
         
@@ -108,11 +108,11 @@ public class CourierShould
         var orderLocation = Location.Create(5, 5).Value;
         var courier = Courier.Create("Ваня", Transport.Bicycle, courierLocation).Value;
         var order = Order.Create(Guid.NewGuid(), orderLocation).Value;
-        courier.Assign(order);
+        courier.Take(order);
         
         //Act
         
-        var result = courier.Assign(order);
+        var result = courier.Take(order);
 
         //Assert
         
@@ -130,7 +130,7 @@ public class CourierShould
         var orderLocation = Location.Create(5, 5).Value;
         var courier = Courier.Create("Ваня", Transport.Bicycle, initialCourierLocation).Value;
         var order = Order.Create(Guid.NewGuid(), orderLocation).Value;
-        courier.Assign(order);
+        courier.Take(order);
         
         //Act
 

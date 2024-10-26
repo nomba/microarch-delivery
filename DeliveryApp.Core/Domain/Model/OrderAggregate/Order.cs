@@ -67,7 +67,7 @@ public class Order : Aggregate
     public UnitResult<Error> Assign(Courier courier)
     {
         if (courier == null) return GeneralErrors.ValueIsRequired(nameof(courier));
-
+        
         CourierId = courier.Id;
         Status = OrderStatus.Assigned;
         return UnitResult.Success<Error>();

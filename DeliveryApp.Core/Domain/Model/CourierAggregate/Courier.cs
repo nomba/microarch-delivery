@@ -72,11 +72,11 @@ public class Courier : Aggregate
         return DeliveryTime.Calculate(Location, order.Location, Transport.Speed);
     }
     
-    public UnitResult<Error> Assign(Order order)
+    public UnitResult<Error> Take(Order order)
     {
         if (order == null) return GeneralErrors.ValueIsRequired(nameof(order));
         if (Status != CourierStatus.Free) return Errors.CantAssignOrderToBusyCourier(Id);
-            
+        
         OrderId = order.Id;
         OrderLocation = order.Location;
         Status = CourierStatus.Busy;
