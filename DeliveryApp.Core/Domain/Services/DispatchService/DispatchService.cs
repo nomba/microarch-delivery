@@ -34,7 +34,9 @@ public class DispatchService : IDispatchService
         
         // Выбираем подходящего курьера в соотвествии с алгоритмом
 
-        var fastestCourier = couriers.MinBy(courier => courier.CheckDeliveryTime(order).Value.StepCount);
+        var fastestCourier = couriers
+            .Where(courier => courier.Status == CourierStatus.Free)
+            .MinBy(courier => courier.CheckDeliveryTime(order).Value.StepCount);
 
         if (fastestCourier is null)
             return Errors.CantFindAnyCourierForOrder(order.Id);
