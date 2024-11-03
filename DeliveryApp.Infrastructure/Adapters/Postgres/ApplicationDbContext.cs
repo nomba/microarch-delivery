@@ -1,5 +1,6 @@
 ﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
+using DeliveryApp.Core.Domain.SharedKernel;
 using DeliveryApp.Infrastructure.Adapters.Postgres.EntityConfigurations.CourierAggregate;
 using DeliveryApp.Infrastructure.Adapters.Postgres.EntityConfigurations.OrderAggregate;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
 
     public DbSet<Order> Orders { get; set; }
     public DbSet<Courier> Couriers { get; set; }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Apply Configuration
@@ -37,15 +38,22 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
             var allStatuses = CourierStatus.List();
             b.HasData(allStatuses.Select(c => new {c.Id, c.Name}));
         });
-
+        
+        // Seed transport with owned entity speed. Learn more:
+        // https://learn.microsoft.com/en-us/ef/core/modeling/data-seeding#model-managed-data
+        
+        var allTransports = Transport.List();
+        
         modelBuilder.Entity<Transport>(b =>
         {
-            var allTransports = Transport.List().ToList();
-            b.HasData(allTransports.Select(c => new {c.Id, c.Name, c.Speed}));
+            b.HasData(allTransports.Select(c => new {c.Id, c.Name}));
         });
+
+        modelBuilder.Entity<Transport>().OwnsOne(p => p.Speed).HasData(
+            allTransports.Select(t => new {TransportId = t.Id, t.Speed.Value}));
     }
 
-    public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
+    public async Task<bool> SaveEntities(CancellationToken cancellationToken = default)
     {
         await SaveChangesAsync(cancellationToken);
         return true;

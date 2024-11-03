@@ -1,4 +1,5 @@
-﻿using DeliveryApp.Core.Domain.Model.OrderAggregate;
+﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,6 +23,14 @@ internal class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
             .Property(entity => entity.CourierId)
             .HasColumnName("courier_id")
             .IsRequired(false);
+        
+        // Must set relationship (bellow) between Order and Courier even Order stores only Courier.ID, not whole object
+        // It provides consistency in database.
+        
+        builder
+            .HasOne<Courier>()
+            .WithMany()
+            .HasForeignKey(entity => entity.CourierId);
 
         builder
             .HasOne(entity => entity.Status)

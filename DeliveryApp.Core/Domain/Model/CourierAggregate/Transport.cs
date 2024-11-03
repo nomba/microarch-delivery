@@ -28,9 +28,13 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate;
 
 public class Transport : Entity<int>
 {
-    public static readonly Transport Pedestrian = new(1, nameof(Pedestrian).ToLowerInvariant(), Speed.Slow);
-    public static readonly Transport Bicycle = new(2, nameof(Bicycle).ToLowerInvariant(), Speed.Moderate);
-    public static readonly Transport Car  = new(3, nameof(Car).ToLowerInvariant(), Speed.Fast);
+    // SMELL:
+    // Speed.(Slow|Moderate|Fast) it could be used bellow instead of `Speed.Create(1).Value`
+    // But EF wants a separate instance of owned entity per each principal entity
+    
+    public static readonly Transport Pedestrian = new(1, nameof(Pedestrian).ToLowerInvariant(), Speed.Create(1).Value);
+    public static readonly Transport Bicycle = new(2, nameof(Bicycle).ToLowerInvariant(), Speed.Create(2).Value);
+    public static readonly Transport Car  = new(3, nameof(Car).ToLowerInvariant(),  Speed.Create(3).Value);
         
     [ExcludeFromCodeCoverage]
     private Transport()
