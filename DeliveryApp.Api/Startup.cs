@@ -2,6 +2,7 @@ using DeliveryApp.Core.Domain.Services.DispatchService;
 using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Primitives;
 
 namespace DeliveryApp.Api;
@@ -45,7 +46,16 @@ public class Startup
         
         // Domain Services
         services.AddTransient<IDispatchService, DispatchService>();
-
+        
+        // EF config
+        services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseNpgsql(connectionString,
+                    sqlOptions => { sqlOptions.MigrationsAssembly("DeliveryApp.Infrastructure"); });
+                options.EnableSensitiveDataLogging();
+            }
+        );
+        
         // Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         

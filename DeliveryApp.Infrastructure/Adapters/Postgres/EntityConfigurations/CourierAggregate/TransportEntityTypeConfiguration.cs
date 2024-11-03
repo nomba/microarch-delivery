@@ -22,11 +22,12 @@ public class TransportEntityTypeConfiguration : IEntityTypeConfiguration<Transpo
             .Property(entity => entity.Name)
             .HasColumnName("name")
             .IsRequired();
-
+        
         builder
-            .Property(entity => entity.Speed)
-            .HasColumnName("speed")
-            .IsRequired();
-
+            .OwnsOne(entity => entity.Speed, s =>
+            {
+                s.Property(p => p.Value).HasColumnName("speed_value").IsRequired();
+                s.WithOwner();
+            });
     }
 }

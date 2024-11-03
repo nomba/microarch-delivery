@@ -1,4 +1,5 @@
 ﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -40,6 +41,24 @@ public class CourierEntityTypeConfiguration : IEntityTypeConfiguration<Courier>
             {
                 l.Property(x => x.X).HasColumnName("location_x").IsRequired();
                 l.Property(y => y.Y).HasColumnName("location_y").IsRequired();
+                l.WithOwner();
+            });
+        
+        builder
+            .Property(entity => entity.OrderId)
+            .HasColumnName("order_id")
+            .IsRequired(false);
+            
+        builder
+            .HasOne<Order>()
+            .WithMany()
+            .HasForeignKey(entity => entity.OrderId);
+        
+        builder
+            .OwnsOne(entity => entity.OrderLocation, l =>
+            {
+                l.Property(x => x.X).HasColumnName("order_location_x").IsRequired();
+                l.Property(y => y.Y).HasColumnName("order_location_y").IsRequired();
                 l.WithOwner();
             });
     }

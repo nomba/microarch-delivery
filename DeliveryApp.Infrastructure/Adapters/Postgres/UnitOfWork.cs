@@ -18,7 +18,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
+    public async Task<bool> SaveEntities(CancellationToken cancellationToken = default)
     {
         await _dbContext.SaveChangesAsync(cancellationToken);
         return true;
