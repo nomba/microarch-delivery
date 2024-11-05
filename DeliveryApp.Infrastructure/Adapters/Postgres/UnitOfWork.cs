@@ -20,8 +20,8 @@ public class UnitOfWork : IUnitOfWork, IDisposable
 
     public async Task<bool> SaveEntities(CancellationToken cancellationToken = default)
     {
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return true;
+        var savedEntriesCount = await _dbContext.SaveChangesAsync(cancellationToken);
+        return savedEntriesCount > 0;
     }
 
     public virtual void Dispose(bool disposing)
