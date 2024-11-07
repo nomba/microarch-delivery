@@ -7,5 +7,5 @@ namespace DeliveryApp.Core.Domain.Services.DispatchService;
 
 public interface IDispatchService
 {
-    public UnitResult<Error> Dispatch(Order order, IReadOnlyCollection<Courier> couriers);
+    public Result<Courier, Error> Dispatch(Order order, IReadOnlyCollection<Courier> couriers);
 }
