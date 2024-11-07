@@ -24,7 +24,7 @@ namespace DeliveryApp.Core.Domain.Services.DispatchService;
 
 public class DispatchService : IDispatchService
 {
-    public UnitResult<Error> Dispatch(Order order, IReadOnlyCollection<Courier> couriers)
+    public Result<Courier, Error> Dispatch(Order order, IReadOnlyCollection<Courier> couriers)
     {
         if (order is null) return GeneralErrors.ValueIsRequired(nameof(order));
         if (couriers == null) return GeneralErrors.ValueIsRequired(nameof(couriers));
@@ -45,15 +45,15 @@ public class DispatchService : IDispatchService
         
         var assignOrderResult = order.Assign(fastestCourier);
         if (assignOrderResult.IsFailure)
-            return assignOrderResult;
+            return assignOrderResult.Error;
 
         // Резервируем курьера для заказа
         
         var takeOrderResult =  fastestCourier.Take(order);
         if (takeOrderResult.IsFailure)
-            return takeOrderResult;
+            return takeOrderResult.Error;
         
-        return UnitResult.Success<Error>();
+        return fastestCourier;
     }
     
     [ExcludeFromCodeCoverage]
