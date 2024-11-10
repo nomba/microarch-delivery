@@ -9,6 +9,7 @@ using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Primitives;
 using Quartz;
 
@@ -34,6 +35,9 @@ public class Startup
     {
         // Health Checks
         services.AddHealthChecks();
+        
+        // MVC deps
+        services.AddMvc();
 
         // Cors
         services.AddCors(options =>
@@ -99,6 +103,29 @@ public class Startup
             configure.UseMicrosoftDependencyInjectionJobFactory();
         });
         services.AddQuartzHostedService();
+        
+        // Swagger
+        services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("1.0.0", new OpenApiInfo
+            {
+                Title = "Delivery Service",
+                Description = "Отвечает за диспетчеризацию доставки",
+                Contact = new OpenApiContact
+                {
+                    Name = "Kirill Vetchinkin",
+                    Url = new Uri("https://microarch.ru"),
+                    Email = "info@microarch.ru"
+                }
+            });
+            // TODO: Commented members does not exist in current SDK. It seems they is obsolete. Need to find out
+            // options.CustomSchemaIds(type => type.FriendlyId(true));
+            options.IncludeXmlComments(
+                $"{AppContext.BaseDirectory}{Path.DirectorySeparatorChar}{Assembly.GetEntryAssembly()?.GetName().Name}.xml");
+            // options.DocumentFilter<BasePathFilter>("");
+            // options.OperationFilter<GeneratePathParamsValidationFilter>();
+        });
+        services.AddSwaggerGenNewtonsoftSupport();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -110,5 +137,19 @@ public class Startup
 
         app.UseHealthChecks("/health");
         app.UseRouting();
+        
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
+        app.UseSwagger(c => { c.RouteTemplate = "openapi/{documentName}/openapi.json"; })
+            .UseSwaggerUI(options =>
+            {
+                options.RoutePrefix = "openapi";
+                options.SwaggerEndpoint("/openapi/1.0.0/openapi.json", "Swagger Delivery Service");
+                options.RoutePrefix = string.Empty;
+                options.SwaggerEndpoint("/openapi-original.json", "Swagger Delivery Service");
+            });
+
+        app.UseCors();
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }
