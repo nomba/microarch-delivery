@@ -1,3 +1,4 @@
+using System.Reflection;
 using DeliveryApp.Core.Domain.Services.DispatchService;
 using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
@@ -55,6 +56,9 @@ public class Startup
                 options.EnableSensitiveDataLogging();
             }
         );
+        
+        // Add register MediatR
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         
         // Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
