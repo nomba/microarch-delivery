@@ -1,10 +1,16 @@
 using System.Reflection;
+using DeliveryApp.Api.Adapters.BackgroundJobs;
+using DeliveryApp.Core.Application.UseCases.Commands.AssignOrder;
+using DeliveryApp.Core.Application.UseCases.Commands.CreateOrder;
+using DeliveryApp.Core.Application.UseCases.Commands.MoveCouriers;
 using DeliveryApp.Core.Domain.Services.DispatchService;
 using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Primitives;
+using Quartz;
 
 namespace DeliveryApp.Api;
 
@@ -60,12 +66,39 @@ public class Startup
         // Add register MediatR
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         
+        // Commands
+        services.AddTransient<IRequestHandler<CreateOrderCommand, bool>, CreateOrderCommandHandler>();
+        services.AddTransient<IRequestHandler<MoveCouriersCommand, bool>, MoveCouriersCommandHandler>();
+        services.AddTransient<IRequestHandler<AssignOrderCommand, bool>, AssignOrderCommandHandler>();
+        
         // Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         
         // Port & Adapters
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<ICourierRepository, CourierRepository>();
+        
+        // CRON Jobs
+        services.AddQuartz(configure =>
+        {
+            var assignOrdersJobKey = new JobKey(nameof(AssignOrdersJob));
+            var moveCouriersJobKey = new JobKey(nameof(MoveCouriersJob));
+            configure
+                .AddJob<AssignOrdersJob>(assignOrdersJobKey)
+                .AddTrigger(
+                    trigger => trigger.ForJob(assignOrdersJobKey)
+                        .WithSimpleSchedule(
+                            schedule => schedule.WithIntervalInSeconds(1)
+                                .RepeatForever()))
+                .AddJob<MoveCouriersJob>(moveCouriersJobKey)
+                .AddTrigger(
+                    trigger => trigger.ForJob(moveCouriersJobKey)
+                        .WithSimpleSchedule(
+                            schedule => schedule.WithIntervalInSeconds(2)
+                                .RepeatForever()));
+            configure.UseMicrosoftDependencyInjectionJobFactory();
+        });
+        services.AddQuartzHostedService();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
