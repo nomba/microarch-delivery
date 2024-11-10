@@ -4,7 +4,7 @@ using DeliveryApp.Core.Ports;
 using MediatR;
 using Primitives;
 
-namespace DeliveryApp.Core.Application.UseCases.Commands.AssignOrder;
+namespace DeliveryApp.Core.Application.UseCases.Commands.AssignOrders;
 
 /*
     Система сама распределяет заказы, она берёт первый неназначенный заказ и ищет самого подходящего курьера.
@@ -13,7 +13,7 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.AssignOrder;
     В этом Use Case мы должны получить свободных курьеров и неназначенные заказы и передать их алгоритму скоринга. Заказ и назначенного Курьера мы сохраняем в БД одной транзакцией.
  */
 
-public class AssignOrderCommandHandler : IRequestHandler<AssignOrderCommand, bool>
+public class AssignOrdersCommandHandler : IRequestHandler<AssignOrdersCommand, bool>
 {
     private readonly IDispatchService _dispatchService;
     private readonly IOrderRepository _orderRepository;
@@ -21,7 +21,7 @@ public class AssignOrderCommandHandler : IRequestHandler<AssignOrderCommand, boo
     private readonly IUnitOfWork _unitOfWork;
 
     // ReSharper disable once ConvertToPrimaryConstructor
-    public AssignOrderCommandHandler(IDispatchService dispatchService, IOrderRepository orderRepository, ICourierRepository courierRepository, IUnitOfWork unitOfWork)
+    public AssignOrdersCommandHandler(IDispatchService dispatchService, IOrderRepository orderRepository, ICourierRepository courierRepository, IUnitOfWork unitOfWork)
     {
         _dispatchService = dispatchService;
         _orderRepository = orderRepository;
@@ -29,7 +29,7 @@ public class AssignOrderCommandHandler : IRequestHandler<AssignOrderCommand, boo
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<bool> Handle(AssignOrderCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(AssignOrdersCommand request, CancellationToken cancellationToken)
     {
         var newOrders = await _orderRepository.GetAllCreated(cancellationToken);
         

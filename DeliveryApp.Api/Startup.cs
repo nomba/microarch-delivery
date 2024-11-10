@@ -1,6 +1,6 @@
 using System.Reflection;
 using DeliveryApp.Api.Adapters.BackgroundJobs;
-using DeliveryApp.Core.Application.UseCases.Commands.AssignOrder;
+using DeliveryApp.Core.Application.UseCases.Commands.AssignOrders;
 using DeliveryApp.Core.Application.UseCases.Commands.CreateOrder;
 using DeliveryApp.Core.Application.UseCases.Commands.MoveCouriers;
 using DeliveryApp.Core.Domain.Services.DispatchService;
@@ -69,7 +69,7 @@ public class Startup
         // Commands
         services.AddTransient<IRequestHandler<CreateOrderCommand, bool>, CreateOrderCommandHandler>();
         services.AddTransient<IRequestHandler<MoveCouriersCommand, bool>, MoveCouriersCommandHandler>();
-        services.AddTransient<IRequestHandler<AssignOrderCommand, bool>, AssignOrderCommandHandler>();
+        services.AddTransient<IRequestHandler<AssignOrdersCommand, bool>, AssignOrdersCommandHandler>();
         
         // Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
