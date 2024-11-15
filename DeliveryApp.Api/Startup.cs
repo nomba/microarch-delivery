@@ -1,8 +1,11 @@
 using System.Reflection;
 using DeliveryApp.Api.Adapters.BackgroundJobs;
+using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Formatters;
 using DeliveryApp.Core.Application.UseCases.Commands.AssignOrders;
 using DeliveryApp.Core.Application.UseCases.Commands.CreateOrder;
 using DeliveryApp.Core.Application.UseCases.Commands.MoveCouriers;
+using DeliveryApp.Core.Application.UseCases.Queries.GetBusyCouriers;
+using DeliveryApp.Core.Application.UseCases.Queries.GetIncompleteOrders;
 using DeliveryApp.Core.Domain.Services.DispatchService;
 using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
@@ -10,6 +13,8 @@ using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using Primitives;
 using Quartz;
 
@@ -36,9 +41,6 @@ public class Startup
         // Health Checks
         services.AddHealthChecks();
         
-        // MVC deps
-        services.AddMvc();
-
         // Cors
         services.AddCors(options =>
         {
@@ -74,6 +76,23 @@ public class Startup
         services.AddTransient<IRequestHandler<CreateOrderCommand, bool>, CreateOrderCommandHandler>();
         services.AddTransient<IRequestHandler<MoveCouriersCommand, bool>, MoveCouriersCommandHandler>();
         services.AddTransient<IRequestHandler<AssignOrdersCommand, bool>, AssignOrdersCommandHandler>();
+        
+        // Queries
+        services.AddTransient<IRequestHandler<GetBusyCouriersQuery, GetBusyCouriersResponse>, GetBusyCouriersQueryHandler>(_ => new GetBusyCouriersQueryHandler(connectionString));
+        services.AddTransient<IRequestHandler<GetIncompleteOrdersQuery, GetIncompleteOrdersResponse>, GetIncompleteOrdersQueryHandler>(_ => new GetIncompleteOrdersQueryHandler(connectionString));
+        
+        // HTTP Handlers
+        // or just     
+        // services.AddMvc();
+        services.AddControllers(options => { options.InputFormatters.Insert(0, new InputFormatterStream()); })
+            .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                options.SerializerSettings.Converters.Add(new StringEnumConverter
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                });
+            });
         
         // Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
