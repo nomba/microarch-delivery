@@ -9,12 +9,11 @@
  */
 
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace OpenApi.Filters
+namespace DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Filters
 {
     /// <summary>
     /// Path Parameter Validation Rules Filter
