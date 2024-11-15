@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace OpenApi.Attributes
+namespace DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Attributes
 {
     /// <summary>
     /// Model state validation attribute
