@@ -1,6 +1,7 @@
 using System.Reflection;
 using DeliveryApp.Api.Adapters.BackgroundJobs;
 using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Formatters;
+using DeliveryApp.Api.Adapters.Kafka.BasketConfirmed;
 using DeliveryApp.Core.Application.UseCases.Commands.AssignOrders;
 using DeliveryApp.Core.Application.UseCases.Commands.CreateOrder;
 using DeliveryApp.Core.Application.UseCases.Commands.MoveCouriers;
@@ -146,10 +147,18 @@ public class Startup
             // options.OperationFilter<GeneratePathParamsValidationFilter>();
         });
         services.AddSwaggerGenNewtonsoftSupport();
-
-
+        
         // gRPC
         services.AddTransient<IGeoClient, GeoClient>(_ => new GeoClient(geoServiceGrpcHost));
+        
+        // Message Broker Consumer
+        services.Configure<HostOptions>(options =>
+        {
+            options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+            options.ShutdownTimeout = TimeSpan.FromSeconds(30);
+        });
+
+        services.AddHostedService<ConsumerService>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
