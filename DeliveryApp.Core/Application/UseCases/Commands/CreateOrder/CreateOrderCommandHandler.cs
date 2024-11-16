@@ -17,12 +17,14 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, boo
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IGeoClient _geoClient;
 
     // ReSharper disable once ConvertToPrimaryConstructor
-    public CreateOrderCommandHandler(IOrderRepository orderRepository, IUnitOfWork unitOfWork)
+    public CreateOrderCommandHandler(IOrderRepository orderRepository, IUnitOfWork unitOfWork, IGeoClient geoClient)
     {
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
+        _geoClient = geoClient;
     }
     
     public async Task<bool> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
@@ -32,11 +34,13 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, boo
         var existingOrder = await _orderRepository.GetById(request.BasketId, cancellationToken);
         if (existingOrder != null) 
             return true;
-        
-        // Real location will be taken from service in the future
-        // For now use random generated
 
-        var (_, isFailure, newOrder) = Order.Create(request.BasketId, Location.RollDice());
+        var (_, isGeoFailure, location) = await _geoClient.GetLocation(request.Street, cancellationToken);
+        
+        if (isGeoFailure)
+            return false;
+        
+        var (_, isFailure, newOrder) = Order.Create(request.BasketId, location);
         
         if (isFailure)
             return false;
