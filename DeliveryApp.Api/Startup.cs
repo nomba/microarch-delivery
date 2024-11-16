@@ -8,6 +8,7 @@ using DeliveryApp.Core.Application.UseCases.Queries.GetBusyCouriers;
 using DeliveryApp.Core.Application.UseCases.Queries.GetIncompleteOrders;
 using DeliveryApp.Core.Domain.Services.DispatchService;
 using DeliveryApp.Core.Ports;
+using DeliveryApp.Infrastructure.Adapters.Grpc.GeoService;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using MediatR;
@@ -145,6 +146,10 @@ public class Startup
             // options.OperationFilter<GeneratePathParamsValidationFilter>();
         });
         services.AddSwaggerGenNewtonsoftSupport();
+
+
+        // gRPC
+        services.AddTransient<IGeoClient, GeoClient>(_ => new GeoClient(geoServiceGrpcHost));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
