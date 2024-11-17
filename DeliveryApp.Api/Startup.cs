@@ -2,14 +2,17 @@ using System.Reflection;
 using DeliveryApp.Api.Adapters.BackgroundJobs;
 using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Formatters;
 using DeliveryApp.Api.Adapters.Kafka.BasketConfirmed;
+using DeliveryApp.Core.Application.DomainEventHandlers;
 using DeliveryApp.Core.Application.UseCases.Commands.AssignOrders;
 using DeliveryApp.Core.Application.UseCases.Commands.CreateOrder;
 using DeliveryApp.Core.Application.UseCases.Commands.MoveCouriers;
 using DeliveryApp.Core.Application.UseCases.Queries.GetBusyCouriers;
 using DeliveryApp.Core.Application.UseCases.Queries.GetIncompleteOrders;
+using DeliveryApp.Core.Domain.Model.OrderAggregate.DomainEvents;
 using DeliveryApp.Core.Domain.Services.DispatchService;
 using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure.Adapters.Grpc.GeoService;
+using DeliveryApp.Infrastructure.Adapters.Kafka.OrderStatusChanged;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using MediatR;
@@ -58,6 +61,7 @@ public class Startup
         var connectionString = Configuration["CONNECTION_STRING"];
         var geoServiceGrpcHost = Configuration["GEO_SERVICE_GRPC_HOST"];
         var messageBrokerHost = Configuration["MESSAGE_BROKER_HOST"];
+        var orderStatusChangedTopic = Configuration["ORDER_STATUS_CHANGED_TOPIC"];
         
         // Domain Services
         services.AddTransient<IDispatchService, DispatchService>();
@@ -159,6 +163,13 @@ public class Startup
         });
 
         services.AddHostedService<ConsumerService>();
+
+        // Domain Event Handlers
+        services.AddTransient<INotificationHandler<OrderAssignedDomainEvent>, OrderAssignedDomainEventHandler>();
+        services.AddTransient<INotificationHandler<OrderCompletedDomainEvent>, OrderCompletedDomainEventHandler>();
+
+        // Message Broker Producer
+        services.AddTransient<IMessageBusProducer, Producer>(_ => new Producer(messageBrokerHost, orderStatusChangedTopic));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -49,7 +49,7 @@ public sealed class UnitOfWork : IUnitOfWork, IDisposable
 
         // Переложили в отдельную переменную
         var domainEvents = domainEntities
-            .SelectMany(x => x.Entity.GetDomainEvents());
+            .SelectMany(x => x.Entity.GetDomainEvents()).ToList();
 
         // Очистили Domain Event в самих агрегатах (поскольку далее они будут отправлены и больше не нужны)
         domainEntities.ToList()
