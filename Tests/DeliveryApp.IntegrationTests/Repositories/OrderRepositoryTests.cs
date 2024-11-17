@@ -4,6 +4,8 @@ using DeliveryApp.Core.Domain.SharedKernel;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using FluentAssertions;
+using MediatR;
+using NSubstitute;
 using Xunit;
 
 namespace DeliveryApp.IntegrationTests.Repositories;
@@ -11,11 +13,13 @@ namespace DeliveryApp.IntegrationTests.Repositories;
 public class OrderRepositoryTests : IAsyncLifetime
 {
     private readonly DatabaseFixture _databaseFixture;
+    private readonly IMediator _mediator;
 
     // ReSharper disable once ConvertToPrimaryConstructor
     public OrderRepositoryTests()
     {
         _databaseFixture = new DatabaseFixture();
+        _mediator = Substitute.For<IMediator>();
     }
 
     [Fact]
@@ -30,7 +34,7 @@ public class OrderRepositoryTests : IAsyncLifetime
         await using (var dbContext = _databaseFixture.InstantiateDbContext())
         {
             var orderRepository = new OrderRepository(dbContext);
-            var unitOfWork = new UnitOfWork(dbContext);
+            var unitOfWork = new UnitOfWork(dbContext, _mediator);
 
             await orderRepository.Add(order);
             await unitOfWork.SaveEntities();
@@ -59,7 +63,7 @@ public class OrderRepositoryTests : IAsyncLifetime
         {
             var orderRepository = new OrderRepository(dbContext);
             var courierRepository = new CourierRepository(dbContext);
-            var unitOfWork = new UnitOfWork(dbContext);
+            var unitOfWork = new UnitOfWork(dbContext, _mediator);
 
             await courierRepository.Add(courier);
             await orderRepository.Add(order);
@@ -78,7 +82,7 @@ public class OrderRepositoryTests : IAsyncLifetime
             // Update in database
             
             var orderRepository = new OrderRepository(dbContext);
-            var unitOfWork = new UnitOfWork(dbContext);
+            var unitOfWork = new UnitOfWork(dbContext, _mediator);
 
             await orderRepository.Update(order);
             await unitOfWork.SaveEntities();
@@ -109,7 +113,7 @@ public class OrderRepositoryTests : IAsyncLifetime
             var orderRepository = new OrderRepository(dbContext);
             await orderRepository.Add(order);
             
-            var unitOfWork = new UnitOfWork(dbContext);
+            var unitOfWork = new UnitOfWork(dbContext, _mediator);
             await unitOfWork.SaveEntities();
         }
 
@@ -161,7 +165,7 @@ public class OrderRepositoryTests : IAsyncLifetime
             var courierRepository = new CourierRepository(dbContext);
             await courierRepository.Add(courier);
 
-            var unitOfWork = new UnitOfWork(dbContext);
+            var unitOfWork = new UnitOfWork(dbContext, _mediator);
             await unitOfWork.SaveEntities();
         }
 
@@ -211,7 +215,7 @@ public class OrderRepositoryTests : IAsyncLifetime
             var courierRepository = new CourierRepository(dbContext);
             await courierRepository.Add(courier);
 
-            var unitOfWork = new UnitOfWork(dbContext);
+            var unitOfWork = new UnitOfWork(dbContext, _mediator);
             await unitOfWork.SaveEntities();
         }
 
