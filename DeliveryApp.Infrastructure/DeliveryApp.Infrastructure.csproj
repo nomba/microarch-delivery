@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Confluent.Kafka" Version="2.6.0" />
       <PackageReference Include="Google.Protobuf" Version="3.28.3" />
       <PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
       <PackageReference Include="Grpc.Net.Client" Version="2.66.0" />
@@ -31,6 +32,11 @@
     <ItemGroup>
       <None Remove="Adapters\Grpc\GeoService\Contract.proto" />
       <Protobuf Include="Adapters\Grpc\GeoService\Contract.proto">
+        <Generator>MSBuild:Compile</Generator>
+      </Protobuf>
+      <None Remove="Adapters\Kafka\OrderStatusChanged\Contract.proto" />
+      <Protobuf Include="Adapters\Kafka\OrderStatusChanged\Contract.proto">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         <Generator>MSBuild:Compile</Generator>
       </Protobuf>
     </ItemGroup>

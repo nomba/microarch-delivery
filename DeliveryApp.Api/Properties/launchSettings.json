@@ -9,7 +9,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "CONNECTION_STRING": "Server=localhost;Port=5432;User Id=username;Password=secret;Database=delivery;",
         "GEO_SERVICE_GRPC_HOST": "http://localhost:5004",
-        "MESSAGE_BROKER_HOST": "localhost"
+        "MESSAGE_BROKER_HOST": "localhost",
+        "ORDER_STATUS_CHANGED_TOPIC": "order.status.changed"
       }
     }
   }
