@@ -3,6 +3,7 @@ using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.SharedKernel;
 using DeliveryApp.Infrastructure.Adapters.Postgres.EntityConfigurations.CourierAggregate;
 using DeliveryApp.Infrastructure.Adapters.Postgres.EntityConfigurations.OrderAggregate;
+using DeliveryApp.Infrastructure.Adapters.Postgres.EntityConfigurations.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Primitives;
 
@@ -25,6 +26,7 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
         modelBuilder.ApplyConfiguration(new CourierEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new CourierStatusEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new TransportEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new OutboxEntityTypeConfiguration());
 
         // Seed
         modelBuilder.Entity<OrderStatus>(b =>
