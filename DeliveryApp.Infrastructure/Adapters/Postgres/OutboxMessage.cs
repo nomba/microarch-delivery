@@ -28,5 +28,5 @@ public sealed class OutboxMessage
     /// <summary>
     ///     Дата публикации
     /// </summary>
-    public DateTime? HandledAtUtc { get; init; }
+    public DateTime? HandledAtUtc { get; set; }
 }
